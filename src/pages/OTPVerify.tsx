@@ -196,4 +196,11 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
               disabled={isSending}
               className="text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
             >
-              <RefreshCw className={`w-3.5 h-3.
+            <button
+  onClick={handleResend}
+  disabled={isSending}
+  className="text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
+>
+  <RefreshCw className={`w-3.5 h-3.5 ${isSending ? 'animate-spin' : ''}`} />
+  <span>{isSending ? 'Sending SMS...' : 'Resend SMS'}</span>
+</button>
