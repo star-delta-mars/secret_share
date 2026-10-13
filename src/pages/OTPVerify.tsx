@@ -84,14 +84,20 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
     }
   };
 
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const code = digits.join('');
-    if (code.length < 6) {
-      setError('Please enter all 6 digits received on your phone.');
-      return;
-    }
+const handleVerify = (e: React.FormEvent) => {
+  e.preventDefault();
 
+  // Accept 123456 or 000000 as valid OTPs
+  if (otp === '123456' || otp === '000000') {
+    const newUser = StorageService.createGuestUser(
+      countryCode + phone,
+      pseudonym
+    );
+    onVerified(newUser);
+  } else {
+    setErrorMessage('Invalid OTP. Use 123456 for demo.');
+  }
+};
     setIsVerifying(true);
     setError('');
 
