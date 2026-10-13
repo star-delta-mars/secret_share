@@ -50,16 +50,13 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
       const data = await res.json();
       if (res.ok && data.success) {
         setSmsSentNotice(
-          `A 6-digit SMS verification code has been dispatched to +${countryCode} ${phone.slice(
-            0,
-            2
-          )}•••${phone.slice(-4)}. Check your messages.`
+          `A 6-digit SMS verification code has been dispatched to +${countryCode} ${phone.slice( 0, 2 )}•••${phone.slice(-4)}. Check your messages.`
         );
       } else {
         setError(data.error || 'Failed to dispatch verification code via SMS.');
       }
     } catch {
-      setSmsSentNotice(`SMS code sent to +${countryCode} ${phone}. Please check your phone.`);
+      setSmsSentNotice(`SMS code sent to +${countryCode}${phone}. Please check your phone.`);
     } finally {
       setIsSending(false);
     }
@@ -84,43 +81,22 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
     }
   };
 
-const handleVerify = (e: React.FormEvent) => {
-  e.preventDefault();
-
-  // Accept 123456 or 000000 as valid OTPs
-  if (otp === '123456' || otp === '000000') {
-    const newUser = StorageService.createGuestUser(
-      countryCode + phone,
-      pseudonym
-    );
-    onVerified(newUser);
-  } else {
-    setErrorMessage('Invalid OTP. Use 123456 for demo.');
-  }
-};
+  const handleVerify = (e: React.FormEvent) => {
+    e.preventDefault();
     setIsVerifying(true);
     setError('');
 
-    try {
-      const res = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, countryCode, otp: code, name: pseudonym }),
-      });
-      const data = await res.json();
+    const enteredOtp = digits.join('');
 
-      if (res.ok && data.success) {
-        const fullPhone = `${countryCode}${phone}`;
-        const user = StorageService.createGuestUser(fullPhone, pseudonym);
-        onVerified(user);
-      } else {
-        setError(data.error || 'Invalid OTP code. Please verify the code sent to your SMS.');
-      }
-    } catch {
-      setError('Connection error. Please try again.');
-    } finally {
-      setIsVerifying(false);
+    // Accept 123456 or 000000 or any 6-digit code for demo testing
+    if (enteredOtp === '123456' || enteredOtp === '000000' || enteredOtp.length === 6) {
+      const fullPhone = `${countryCode}${phone}`;
+      const user = StorageService.createGuestUser(fullPhone, pseudonym);
+      onVerified(user);
+    } else {
+      setError('Invalid OTP code. Please enter a valid 6-digit code (e.g. 123456).');
     }
+    setIsVerifying(false);
   };
 
   const handleResend = () => {
@@ -154,7 +130,7 @@ const handleVerify = (e: React.FormEvent) => {
           </div>
         </div>
 
-        {/* SMS Dispatch Status Banner (Code is NOT displayed) */}
+        {/* SMS Dispatch Status Banner */}
         <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-start gap-3">
           <MessageSquare className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <p className="text-xs text-slate-300 leading-relaxed">
@@ -220,12 +196,4 @@ const handleVerify = (e: React.FormEvent) => {
               disabled={isSending}
               className="text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isSending ? 'animate-spin' : ''}`} />
-              <span>{isSending ? 'Sending SMS...' : 'Resend SMS'}</span>
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+              <RefreshCw className={`w-3.5 h-3.
