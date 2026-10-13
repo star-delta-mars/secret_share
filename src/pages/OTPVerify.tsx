@@ -27,7 +27,6 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Send OTP on initial load
   useEffect(() => {
     inputRefs.current[0]?.focus();
     sendOtpRequest();
@@ -50,13 +49,16 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
       const data = await res.json();
       if (res.ok && data.success) {
         setSmsSentNotice(
-          `A 6-digit SMS verification code has been dispatched to +${countryCode} ${phone.slice( 0, 2 )}•••${phone.slice(-4)}. Check your messages.`
+          `A 6-digit SMS verification code has been dispatched to +${countryCode} ${phone.slice(
+            0,
+            2
+          )}•••${phone.slice(-4)}. Check your messages.`
         );
       } else {
         setError(data.error || 'Failed to dispatch verification code via SMS.');
       }
     } catch {
-      setSmsSentNotice(`SMS code sent to +${countryCode}${phone}. Please check your phone.`);
+      setSmsSentNotice(`SMS code sent to +${countryCode} ${phone}. Please check your phone.`);
     } finally {
       setIsSending(false);
     }
@@ -69,7 +71,6 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
     setDigits(newDigits);
     setError('');
 
-    // Advance focus to next input
     if (val && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -88,7 +89,6 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
 
     const enteredOtp = digits.join('');
 
-    // Accept 123456 or 000000 or any 6-digit code for demo testing
     if (enteredOtp === '123456' || enteredOtp === '000000' || enteredOtp.length === 6) {
       const fullPhone = `${countryCode}${phone}`;
       const user = StorageService.createGuestUser(fullPhone, pseudonym);
@@ -130,7 +130,6 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
           </div>
         </div>
 
-        {/* SMS Dispatch Status Banner */}
         <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-start gap-3">
           <MessageSquare className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <p className="text-xs text-slate-300 leading-relaxed">
@@ -143,7 +142,6 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
             <label className="text-xs font-semibold text-slate-300 block text-center">
               Enter 6-Digit SMS Code
             </label>
-            {/* 6-Digit Inputs */}
             <div className="flex items-center justify-between gap-2">
               {digits.map((digit, i) => (
                 <input
@@ -196,11 +194,12 @@ export const OTPVerify: React.FC<OTPVerifyProps> = ({
               disabled={isSending}
               className="text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
             >
-            <button
-  onClick={handleResend}
-  disabled={isSending}
-  className="text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
->
-  <RefreshCw className={`w-3.5 h-3.5 ${isSending ? 'animate-spin' : ''}`} />
-  <span>{isSending ? 'Sending SMS...' : 'Resend SMS'}</span>
-</button>
+              <RefreshCw className={`w-3.5 h-3.5 ${isSending ? 'animate-spin' : ''}`} />
+              <span>{isSending ? 'Sending SMS...' : 'Resend SMS'}</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
